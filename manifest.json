@@ -6,18 +6,18 @@
   "permissions": ["storage", "tabs", "webNavigation", "cookies"],
   "host_permissions": ["https://leetcode.com/*"],
   "icons": {
-    "16": "icons/logo16.png",
-    "32": "icons/logo32.png",
-    "48": "icons/logo48.png",
-    "128": "icons/logo128.png"
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
   },
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
-      "16": "icons/logo16.png",
-      "32": "icons/logo32.png",
-      "48": "icons/logo48.png",
-      "128": "icons/logo128.png"
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
     }
   },
   "background": {
