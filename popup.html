@@ -1,0 +1,163 @@
+<!-- popup.html -->
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>LeetCode Challenge Verifier</title>
+        <style>
+            body {
+                width: 320px;
+                padding: 16px;
+                font-family:
+                    system-ui,
+                    -apple-system,
+                    sans-serif;
+                margin: 0;
+            }
+
+            h1 {
+                font-size: 18px;
+                margin: 0 0 16px 0;
+                color: #2d3748;
+            }
+
+            .loader {
+                display: none;
+                text-align: center;
+                padding: 8px;
+                color: #4a5568;
+            }
+
+            .status-card {
+                padding: 16px;
+                border-radius: 8px;
+                margin-bottom: 16px;
+            }
+
+            .status-pending {
+                background: #fff3e6;
+                border: 1px solid #ffcc80;
+            }
+
+            .status-complete {
+                background: #e8f5e9;
+                border: 1px solid #a5d6a7;
+            }
+
+            .status-title {
+                font-weight: 600;
+                margin-bottom: 8px;
+            }
+
+            .status-details {
+                font-size: 14px;
+                line-height: 1.4;
+            }
+
+            .problem-title {
+                font-weight: 500;
+                margin: 4px 0;
+            }
+
+            .streak {
+                margin-top: 8px;
+                color: #2d3748;
+            }
+
+            .verified-badge {
+                margin-top: 8px;
+                color: #2f855a;
+                font-weight: 500;
+            }
+
+            .problem-link {
+                color: #4299e1;
+                text-decoration: none;
+                display: inline-block;
+                margin-top: 8px;
+                font-size: 14px;
+            }
+
+            .problem-link:hover {
+                text-decoration: underline;
+            }
+
+            .verify-btn {
+                width: 100%;
+                padding: 8px 16px;
+                background: #4299e1;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 500;
+                transition: background 0.2s;
+            }
+
+            .verify-btn:hover {
+                background: #3182ce;
+            }
+
+            .verify-btn:disabled {
+                background: #cbd5e0;
+                cursor: not-allowed;
+            }
+
+            .settings-link {
+                display: block;
+                text-align: center;
+                color: #718096;
+                text-decoration: none;
+                font-size: 13px;
+                margin-top: 12px;
+            }
+
+            .settings-link:hover {
+                color: #4a5568;
+            }
+
+            .toast {
+                position: fixed;
+                bottom: 16px;
+                left: 16px;
+                right: 16px;
+                padding: 8px 16px;
+                border-radius: 6px;
+                font-size: 14px;
+                display: none;
+                text-align: center;
+            }
+
+            .toast.success {
+                background: #c6f6d5;
+                color: #2f855a;
+            }
+
+            .toast.error {
+                background: #fed7d7;
+                color: #c53030;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Daily Challenge Status</h1>
+
+        <div id="loader" class="loader">Checking status...</div>
+
+        <div id="status" class="status-card">
+            <!-- Status will be updated by JavaScript -->
+        </div>
+
+        <button id="verify" class="verify-btn" disabled>Send to Discord</button>
+
+        <a href="#" id="settingsLink" class="settings-link">
+            Configure Settings
+        </a>
+
+        <div id="toast" class="toast">
+            <!-- Toast messages will appear here -->
+        </div>
+    </body>
+    <script src="popup.js"></script>
+</html>
