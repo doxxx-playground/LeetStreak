@@ -1,6 +1,3 @@
-I'll create a comprehensive README.md file for your LeetStreak Chrome extension:
-
-```markdown
 # LeetStreak
 
 <p align="center">
