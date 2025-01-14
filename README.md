@@ -1,7 +1,7 @@
 # LeetStreak
 
 <p align="center">
-  <img src="icons/icon128.png" alt="LeetStreak Logo"/>
+  <img src="Logo.png" alt="LeetStreak Logo"/>
 </p>
 
 A Chrome extension that helps you track and share your LeetCode daily challenge streak on Discord.
