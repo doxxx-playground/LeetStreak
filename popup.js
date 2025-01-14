@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          username: "LeetCode Verifier",
+          username: "LeetStreak",
           embeds: [
             {
               title: "LeetCode Daily Challenge Completed! 🎉",
