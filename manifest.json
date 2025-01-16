@@ -3,7 +3,7 @@
   "name": "LeetStreak",
   "version": "1.0",
   "description": "Track and verify your LeetCode daily challenge streak on Discord",
-  "permissions": ["storage", "tabs", "webNavigation", "cookies"],
+  "permissions": ["storage"],
   "host_permissions": ["https://leetcode.com/*"],
   "icons": {
     "16": "icons/icon16.png",
