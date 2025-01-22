@@ -59,6 +59,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (!dailyCompletion)
         throw new Error("Complete today's challenge first!");
 
+      const problemLink = `https://leetcode.com/problems/${dailyCompletion.questionSlug}/`;
+      const submissionLink = `https://leetcode.com/problems/${dailyCompletion.questionSlug}/submissions/${dailyCompletion.submissionId}/`;
+
       const response = await fetch(webhookUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -75,6 +78,16 @@ document.addEventListener("DOMContentLoaded", async () => {
                   name: "Current Streak",
                   value: `${dailyCompletion.streak} days`,
                   inline: true,
+                },
+                {
+                  name: "Problem",
+                  value: `[#${dailyCompletion.questionId} - ${dailyCompletion.questionTitle}](${problemLink})`,
+                  inline: false,
+                },
+                {
+                  name: "My Solution",
+                  value: `[View my ${dailyCompletion.submissionLang} solution](${submissionLink})\n⚡ Runtime: ${dailyCompletion.runtime}\n💾 Memory: ${dailyCompletion.memory}`,
+                  inline: false,
                 },
               ],
               timestamp: new Date().toISOString(),

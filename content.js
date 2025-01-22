@@ -1,27 +1,33 @@
-// GraphQL 응답을 분석하는 함수
-async function analyzeGraphQLResponse(query) {
+async function analyzeGraphQLResponse(query, operationName, variables = {}) {
   try {
-    // LeetCode의 GraphQL 엔드포인트
     const response = await fetch("https://leetcode.com/graphql", {
       method: "POST",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
+        "x-csrftoken":
+          document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("csrftoken="))
+            ?.split("=")[1] || "",
       },
-      body: JSON.stringify({ query }),
+      body: JSON.stringify({
+        query,
+        operationName,
+        variables,
+      }),
     });
 
     if (!response.ok) {
-      throw new Error("GraphQL request failed");
+      throw new Error(`GraphQL request failed: ${response.status}`);
     }
 
     return await response.json();
   } catch (error) {
-    console.error("Error in GraphQL request:", error);
     throw error;
   }
 }
 
-// 날짜 유틸리티 함수
 function getTodayDateString() {
   return new Date().toISOString().split("T")[0];
 }
@@ -33,26 +39,37 @@ async function checkDailyCompletion() {
   isChecking = true;
 
   try {
-    console.log("=== Starting Daily Challenge Analysis ===");
-
     const today = getTodayDateString();
-
-    const completionData = await analyzeGraphQLResponse(`
-      query getDailyCompletion {
-        streakCounter {
-          streakCount
-          currentDayCompleted
-        }
+    const completionData = await analyzeGraphQLResponse(
+      `
+      query questionOfToday {
         activeDailyCodingChallengeQuestion {
+          date
           userStatus
+          link
           question {
-            status
+            acRate
+            difficulty
+            freqBar
             questionFrontendId
+            isFavor
+            isPaidOnly
+            status
             title
+            titleSlug
+            hasVideoSolution
+            hasSolution
           }
         }
+        streakCounter {
+          streakCount
+          daysSkipped
+          currentDayCompleted
+        }
       }
-    `);
+      `,
+      "questionOfToday",
+    );
 
     const dailyQuestion =
       completionData?.data?.activeDailyCodingChallengeQuestion;
@@ -64,31 +81,57 @@ async function checkDailyCompletion() {
       dailyQuestion?.userStatus === "SOLVED" ||
       dailyQuestion?.question?.status === "ac";
 
-    console.log("Challenge status:", {
-      date: today,
-      currentStreak: streakInfo?.streakCount || 0,
-      currentDayCompleted: isCompleted,
-      questionTitle: dailyQuestion?.question?.title,
-      questionId: dailyQuestion?.question?.questionFrontendId,
-      questionStatus: dailyQuestion?.userStatus,
-    });
+    if (isCompleted && dailyQuestion?.question?.titleSlug) {
+      const submissionData = await analyzeGraphQLResponse(
+        `
+        query questionSubmissionList($titleSlug: String!, $limit: Int, $offset: Int) {
+          questionSubmissionList(
+            questionSlug: $titleSlug
+            offset: $offset
+            limit: $limit
+          ) {
+            lastKey
+            hasNext
+            submissions {
+              id
+              statusDisplay
+              lang
+              langName
+              runtime
+              timestamp
+              memory
+            }
+          }
+        }
+        `,
+        "questionSubmissionList",
+        {
+          titleSlug: dailyQuestion.question.titleSlug,
+          limit: 1,
+          offset: 0,
+        },
+      );
 
-    if (isCompleted) {
+      const latestSubmission =
+        submissionData?.data?.questionSubmissionList?.submissions?.[0];
+
       await chrome.storage.local.set({
         dailyCompletion: {
           date: today,
           verified: false,
           questionId: dailyQuestion?.question?.questionFrontendId,
           questionTitle: dailyQuestion?.question?.title,
+          questionSlug: dailyQuestion?.question?.titleSlug,
+          submissionId: latestSubmission?.id,
+          submissionLang: latestSubmission?.langName,
+          runtime: latestSubmission?.runtime,
+          memory: latestSubmission?.memory,
           streak: streakInfo?.streakCount || 0,
         },
       });
     }
-  } catch (error) {
-    console.error("Error in completion check:", error);
   } finally {
     isChecking = false;
-    console.log("=== Challenge Analysis Finished ===");
   }
 }
 
@@ -96,21 +139,26 @@ async function checkDailyCompletion() {
 checkDailyCompletion();
 
 // 주기적으로 체크 (2분마다)
-setInterval(checkDailyCompletion, 120000);
+chrome.runtime.sendMessage({ type: "createAlarm" });
 
-// 문제 제출 후 체크를 위한 URL 변경 감지
 let lastUrl = location.href;
 new MutationObserver(() => {
   const url = location.href;
   if (url !== lastUrl) {
     lastUrl = url;
-    setTimeout(checkDailyCompletion, 2000); // URL 변경 2초 후 체크
+    setTimeout(checkDailyCompletion, 3000);
   }
 }).observe(document, { subtree: true, childList: true });
 
-// 페이지 포커스시 체크
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") {
+    setTimeout(checkDailyCompletion, 1000);
+  }
+});
+
+// Listen for check requests from background
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.type === "checkCompletion") {
     checkDailyCompletion();
   }
 });
