@@ -1,0 +1,12 @@
+{
+    "name": "LeetStreak",
+    "packageManager": "yarn@4.5.0",
+    "scripts": {
+        "build": "extension build",
+        "dev": "extension dev",
+        "start": "extension start"
+    },
+    "devDependencies": {
+        "extension": "latest"
+    }
+}

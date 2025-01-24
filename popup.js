@@ -9,14 +9,46 @@ document.addEventListener("DOMContentLoaded", async () => {
     verifyButton.disabled = isLoading;
   };
 
-  const updateStatus = (completion, verified = false) => {
+  const getDailyQuestion = async () => {
+    try {
+      const response = await fetch("https://leetcode.com/graphql", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query: `
+            query questionOfToday {
+              activeDailyCodingChallengeQuestion {
+                link
+                question {
+                  titleSlug
+                }
+              }
+            }
+          `,
+        }),
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch daily question");
+
+      const data = await response.json();
+      return `https://leetcode.com${data.data.activeDailyCodingChallengeQuestion.link}`;
+    } catch (error) {
+      console.error("Error fetching daily question:", error);
+      return "https://leetcode.com/";
+    }
+  };
+
+  const updateStatus = async (completion, verified = false) => {
     if (!completion) {
+      const todayQuestionLink = await getDailyQuestion();
       statusContainer.className = "status-card status-pending";
       statusContainer.innerHTML = `
         <div class="status-title">❌ Not Completed</div>
         <div class="status-message">You haven't completed today's challenge yet.</div>
-        <a href="https://leetcode.click/" class="problem-link" target="_blank">
-          Go to LeetCode →
+        <a href="${todayQuestionLink}" class="problem-link" target="_blank">
+          Go to Today's Challenge →
         </a>
       `;
       verifyButton.disabled = true;
